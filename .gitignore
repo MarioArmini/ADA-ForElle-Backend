@@ -1,0 +1,52 @@
+# phpstorm project files
+.idea
+
+# netbeans project files
+nbproject
+
+# zend studio for eclipse project files
+.buildpath
+.project
+.settings
+
+# windows thumbnail cache
+Thumbs.db
+
+# composer vendor dir
+.vs/
+/config
+/vendor-2.14
+/vendor
+/dati
+/runtime
+/doc
+/temp
+/tests
+/web/assets
+/web/download
+/web/assets
+/web/test
+/web/validaxml/xml/*.xml
+/web/pages
+/web/*.csv
+/web/*.zip
+/shell_script/router/spa122/file_generati
+/shell_script/router/wrp400/file_generati
+/shell_script/acl_ap_agile/
+
+# composer itself is not needed
+composer.phar
+mc1.*
+yii
+yii.bat
+.bowerrc
+
+# Mac DS_Store Files
+.DS_Store
+**/*.scc
+**/*.bak
+
+# phpunit itself is not needed
+phpunit.phar
+# local phpunit config
+/phpunit.xml
