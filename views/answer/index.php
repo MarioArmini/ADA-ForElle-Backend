@@ -7,7 +7,7 @@ use yii\widgets\Pjax;
 /* @var $searchModel app\models\AnswerSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('app', 'Prefix/Suffix/Answers');
+$this->title = Yii::t('app', 'Bot Answers');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="answer-index">
