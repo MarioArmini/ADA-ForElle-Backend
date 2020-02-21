@@ -19,9 +19,7 @@ if(Yii::$app->user->isGuest)
 }
 else
 {
-    $items[] = ['label' => 'Answers/Questions Sentiments', 'url' => ['/question-sentiment']];
-    $items[] = ['label' => 'Bot Answers', 'url' => ['/answer']];
-    $items[] = ['label' => 'Label', 'url' => ['/label-sentiment']];
+    $items[] = ['label' => 'Users', 'url' => ['/users']];
     $items[] = '<li>'
                 . Html::beginForm(['/site/logout'], 'post')
                 . Html::submitButton(

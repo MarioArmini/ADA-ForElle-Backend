@@ -7,7 +7,7 @@ $this->title = "MC1 Database Questions";
 <div class="site-index">
 
     <div class="jumbotron">
-        <h1>MC1 Database Questions</h1>
+        <h1>MC3 Backend</h1>
     </div>
 
     <div class="body-content">
@@ -24,17 +24,7 @@ $this->title = "MC1 Database Questions";
                                 <a href="<?=Url::to(["@web/question-sentiment"])?>">
                                 <strong>Answers/Questions Sentiments</strong>
                                 </a>
-                            </li>
-                            <li>
-                                <a href="<?=Url::to(["@web/answer"])?>">
-                                    <strong>Bot answer</strong>
-                                </a>
-                            </li>   
-                            <li>
-                                <a href="<?=Url::to(["@web/label-sentiment"])?>">
-                                    <strong>Label Sentiment</strong>
-                                </a>
-                            </li>
+                            </li>                            
                         </ul>
                     </div>                    
                 </div>
