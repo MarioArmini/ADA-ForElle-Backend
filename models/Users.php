@@ -20,7 +20,7 @@ class Users extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'users';
+        return 'Users';
     }
 
     /**
@@ -31,7 +31,7 @@ class Users extends \yii\db\ActiveRecord
         return [
             [['id'], 'integer'],
             [['username'], 'string', 'max' => 50],
-            [['password'], 'string', 'max' => 100],
+            [['password','name','number','tokenDevice'], 'string', 'max' => 255],
             [['authkey', 'accesstoken'], 'string', 'max' => 255],
             [['username','password'], 'required'],
         ];
@@ -48,6 +48,18 @@ class Users extends \yii\db\ActiveRecord
             'password' => 'Password',
             'authkey' => 'Authkey',
             'accesstoken' => 'Accesstoken',
+            'name' => 'Name',
+            'number' => 'Number',
+            'tokenDevice' => 'Token Device',
+        ];
+    }
+    public function getJson()
+    {
+        return [
+            "id" =>  $this->id,
+            "name" => trim($this->name),
+            "number" => trim($this->number),
+            "tokenDevice" => trim($this->tokenDevice),
         ];
     }
 }

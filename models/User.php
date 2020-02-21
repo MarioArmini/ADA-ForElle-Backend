@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+use Yii;
+
 class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
 {
     public $id;
@@ -38,10 +40,19 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        $u = Users::findOne(["accesstoken" => $token]);
-        if($u !=  null)
+        Yii::debug("findIdentityByAccessToken : " . $token . " [" . $type . "]");
+
+        if($type == "sizeg\jwt\JwtHttpBearerAuth")
         {
-            return self::copyObject($u);
+            $token = Yii::$app->jwt->getParser()->parse((string) $token);
+            //utilfunc::AddLog($token);
+            return self::findIdentity($token->getClaim('uid'));
+        }
+
+        $s = Users::findOne(["accesstoken" => $token]);
+        if($s != null)
+        {
+            return self::findIdentity($s->id);
         }
 
         return null;
@@ -96,6 +107,33 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
      */
     public function validatePassword($password)
     {
-        return $this->password === $password;
+        $result = false;
+        if($this->password === Utils::CryptPassword(trim($password)))
+        {
+            $result = true;
+        }
+        return $result;
+    }
+
+    public function generateTokenJwt()
+    {
+        $expireDate = strtotime("+60 days");
+        $signer = new \Lcobucci\JWT\Signer\Hmac\Sha256();
+        /** @var Jwt $jwt */
+        $jwt = Yii::$app->jwt;
+        $token = $jwt->getBuilder()
+            ->setIssuer(Yii::$app->params["SITE_URL"])              // Configures the issuer (iss claim)
+            ->setAudience(Yii::$app->params["SITE_URL"])            // Configures the audience (aud claim)
+            ->setId("4f1g23a12aa", true)                            // Configures the id (jti claim), replicating as a header item
+            ->setIssuedAt(time())                                   // Configures the time that the token was issue (iat claim)
+            ->setExpiration($expireDate)                            // Configures the expiration time of the token (exp claim)
+            ->set('uid', $this->id)                                 // Configures a new claim, called "uid"
+            ->sign($signer, $jwt->key)                              // creates a signature using [[Jwt::$key]]
+            ->getToken();
+
+        return $token;
+    }
+    public static function GetCurrentUser() {
+        return self::findOne(Utils::GetUserID());
     }
 }

@@ -2,7 +2,7 @@
 use yii\helpers\Url;
 /* @var $this yii\web\View */
 
-$this->title = "MC1 Database Questions";
+$this->title = "MC3 Database";
 ?>
 <div class="site-index">
 
@@ -21,10 +21,15 @@ $this->title = "MC1 Database Questions";
                     <div class="panel-body">
                         <ul>
                             <li>
-                                <a href="<?=Url::to(["@web/question-sentiment"])?>">
-                                <strong>Answers/Questions Sentiments</strong>
+                                <a href="<?=Url::to(["@web/users"])?>">
+                                <strong>Users</strong>
                                 </a>
                             </li>                            
+                            <li>
+                                <a href="<?=Url::to(["@web/helprequest"])?>">
+                                    <strong>Help Request</strong>
+                                </a>
+                            </li>
                         </ul>
                     </div>                    
                 </div>

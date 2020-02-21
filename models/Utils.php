@@ -109,7 +109,7 @@ class Utils
             catch (\Exception $e )
             {
                 $bRetry = true;
-                utilfunc::AddLog($e->getMessage() . "\r\n" . $e->getTraceAsString());
+                Utils::AddLog($e->getMessage() . "\r\n" . $e->getTraceAsString());
             }
         }
 
@@ -177,7 +177,7 @@ class Utils
         }
         catch(\Exception $e)
         {
-            utilfunc::AddLogException($e);
+            Utils::AddLogException($e);
         }
 
         return $s;
@@ -353,7 +353,7 @@ class Utils
                         $arg = "ARGS: ";
                         foreach($file_path['args'] AS $key_arg => $var_arg) {
                             if(is_object($var_arg)) $var_arg = (array)$var_arg;
-                            if(is_array($var_arg)) $var_arg = utilfunc::PrintArray($var_arg);
+                            if(is_array($var_arg)) $var_arg = Utils::PrintArray($var_arg);
                             $arg .= "[" . $key_arg . '] => ' . $var_arg . " ";
                         }
                     }
@@ -385,13 +385,13 @@ class Utils
         {
             $s = $e->getMessage();
             $s .= "\n" . $e->getTraceAsString();
-            Yii::trace($s);
+            Yii::debug($s);
 
             if($type == "error" || $type == "mail")
             {
                 $s = $e->getMessage();
                 $s .= "\n" . $e->getTraceAsString();
-                utilfunc::AddLog($s); //no email
+                Utils::AddLog($s); //no email
             }
         }
     }
@@ -432,5 +432,83 @@ class Utils
         if(isset($a[$k2]) && strlen($a[$k2]) > 0) return $a[$k2];
 
         return $value;
+    }
+    public static function GetUserID()
+    {
+        if(self::IsConsoleMode()) return 0;
+        if(Yii::$app->user->identity == null) return 0;
+        if(Yii::$app->user->isGuest)
+        {
+            return 0;
+        }
+
+        return Yii::$app->user->identity->id;
+    }
+
+    public static function IsConsoleMode()
+    {
+        if (Yii::$app instanceof \yii\console\Application) return true;
+
+        return false;
+    }
+    public static function GetCurrentAction()
+    {
+        return strtolower(trim(Yii::$app->controller->id . "/" . Yii::$app->controller->action->id));
+    }
+    public static function randomString($len = 8)
+    {
+        return Yii::$app->security->generateRandomString($len);
+    }
+    public static function CryptPassword($p)
+    {
+        return md5($p);
+    }
+    public static function GetIP()
+    {
+        if(!self::IsConsoleMode())
+        {
+            if(isset($_SERVER))
+            {
+                if(isset($_SERVER["REMOTE_ADDR"])) return $_SERVER["REMOTE_ADDR"];
+            }
+        }
+        return "";
+    }
+    public static function Chmod($file)
+    {
+        try
+        {
+
+            if(file_exists($file))
+            {
+                chmod($file,0766);
+            }
+            return true;
+        }
+        catch(\Exception $e)
+        {
+            self::AddLogException($e);
+        }
+
+        return false;
+    }
+    public static function MkDir($dir)
+    {
+        try
+        {
+
+            if(!file_exists($dir))
+            {
+                mkdir($dir,0777,true);
+                chmod($dir,0777);
+            }
+            return true;
+        }
+        catch(\Exception $e)
+        {
+            self::AddLogException($e);
+        }
+
+        return false;
     }
 }
