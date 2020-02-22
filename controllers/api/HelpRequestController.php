@@ -214,6 +214,10 @@ class HelpRequestController extends \yii\rest\Controller
                 {
                     return Yii::$app->response->sendFile($obj->getFullPathFile(),$obj->audioFileUrl,["inline" => true]);
                 }
+                else
+                {
+                    Utils::AddLog("actionGetAudioFile utente non corretto : " . $userId .  " " . $request->userId);
+                }
             }
         }
         throw new \yii\web\BadRequestHttpException("Data Wrong");
