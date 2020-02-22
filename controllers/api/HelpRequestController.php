@@ -234,7 +234,7 @@ class HelpRequestController extends \yii\rest\Controller
         $sql = "SELECT h.*
                 FROM HelpRequest h
                 LEFT JOIN HelpRequestNotifications hrn ON hrn.helpRequestId = h.id
-                WHERE hrn.friendId = " . Utils::GetUserID();
+                WHERE hrn.friendId = " . Utils::GetUserID() . " AND h.active = 1";
 
         $pRs = HelpRequest::findBySql($sql)->all();
         foreach($pRs as $r)
