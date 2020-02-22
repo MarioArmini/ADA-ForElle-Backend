@@ -243,4 +243,19 @@ class HelpRequestController extends \yii\rest\Controller
         }
         return $result;
     }
+    public function actionIndex()
+    {
+        $result = [];
+        $sql = "SELECT h.*
+                FROM HelpRequest h
+                LEFT JOIN HelpRequestNotifications hrn ON hrn.helpRequestId = h.id
+                WHERE hrn.friendId = " . Utils::GetUserID() . " OR h.userId = " . Utils::GetUserID();
+
+        $pRs = HelpRequest::findBySql($sql)->all();
+        foreach($pRs as $r)
+        {
+            $result[] = $r->getJson();
+        }
+        return $result;
+    }
 }
