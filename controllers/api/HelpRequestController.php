@@ -152,7 +152,7 @@ class HelpRequestController extends \yii\rest\Controller
             if($obj != null && $obj->userId == Utils::GetUserID())
             {
                 if($serverity > 0) $obj->serverity = $serverity;
-                if($active > 0) $obj->active = $active;
+                if($active >= 0) $obj->active = $active;
                 if($obj->save(false))
                 {
                     return $obj->getJson();
@@ -217,5 +217,30 @@ class HelpRequestController extends \yii\rest\Controller
             }
         }
         throw new \yii\web\BadRequestHttpException("Data Wrong");
+    }
+    public function actionCurrentRequests()
+    {
+        $result = [];
+        $pRs = HelpRequest::find()->where(["userId" => Utils::GetUserID(), "active" => 1])->orderBy(["id" => SORT_DESC])->all();
+        foreach($pRs as $r)
+        {
+            $result[] = $r->getJson();
+        }
+        return $result;
+    }
+    public function actionActiveRequests()
+    {
+        $result = [];
+        $sql = "SELECT h.*
+                FROM HelpRequest h
+                LEFT JOIN HelpRequestNotifications hrn ON hrn.helpRequestId = h.id
+                WHERE hrn.friendId = " . Utils::GetUserID();
+
+        $pRs = HelpRequest::findBySql($sql)->all();
+        foreach($pRs as $r)
+        {
+            $result[] = $r->getJson();
+        }
+        return $result;
     }
 }
