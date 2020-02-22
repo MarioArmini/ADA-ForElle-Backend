@@ -10,6 +10,7 @@ use yii\filters\auth\HttpBasicAuth;
 use yii\filters\VerbFilter;
 use app\models\Cacl;
 use app\models\User;
+use app\models\Users;
 use app\models\Utils;
 use sizeg\jwt\Jwt;
 use sizeg\jwt\JwtHttpBearerAuth;
@@ -205,5 +206,26 @@ class UserController extends \yii\rest\Controller
 
         throw new \yii\web\BadRequestHttpException("Data Wrong");
     }
+    public function actionFindFriends()
+    {
+        if(Yii::$app->request->isPost)
+        {
+            $body = trim(Yii::$app->request->rawBody);
+            $j = new \yii\helpers\Json();
 
+            $dati = $j->decode($body);
+            if(!is_array($dati))  throw new \yii\web\BadRequestHttpException("Data Wrong");
+
+
+
+            $user = \app\models\Users::findOne(Utils::GetUserID());
+            if($user != null)
+            {
+                $pRs = Users::find()->where(['number' => $dati])->all();
+                return $pRs;
+            }
+        }
+
+        throw new \yii\web\BadRequestHttpException("Data Wrong");
+    }
 }
