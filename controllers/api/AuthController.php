@@ -100,8 +100,8 @@ class AuthController extends \yii\rest\Controller
         return $this->asJson([
             "userId" =>  $user->id,
             "isLogged" => true,
-            "name" => $user->name,
-            "number" => $user->number,
+            "name" => trim($user->name),
+            "number" => trim($user->number),
         ]);
     }
 
