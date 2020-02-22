@@ -224,7 +224,7 @@ class UserController extends \yii\rest\Controller
                 $pRs = Users::find()->where(['number' => $dati])->all();
                 $result = [];
                 foreach($pRs as $r) {
-                    $result[] = $r->toJson();
+                    $result[] = $r->getJson();
                 }
                 return $result;
             }
