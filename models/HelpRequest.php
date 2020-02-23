@@ -97,20 +97,34 @@ class HelpRequest extends \yii\db\ActiveRecord
         ];
     }
     public function sendNotifica($deviceToken) {
-        $messageBody = [
-                'alert' => [
-                    "body" => $this->description,
-                    "title" => "",
-                    "subtitle" => "",
-                ],
-                'sound' => 'alert',
-                'badge' => 2,
-                'category' => 'Help Request',
-                'thread-id' => $this->id
+        $result = false;
+        try {
+            $messageBody = [
+                "title" => "Help Request",
+                "body" => $this->description,
             ];
+            $params = [
+                'sound' => 'alert',
+                'badge' => 1,
+                ];
+            $customParams = [
+                'category' => 'Help Request',
+                'HelpRequest' => $this->id
+            ];
+            $apns = Yii::$app->apns;
+            if(is_array($deviceToken))
+                $apns->sendMulti($deviceToken, $messageBody,$customParams,$params);
+            else
+                $apns->send($deviceToken, $messageBody,$customParams,$params);
 
-        $apns = Yii::$app->apns;
-        $apns->send($deviceToken, $this->description, $messageBody);
+            $result = $apns->success;
+        }
+        catch(\Exception $ex)
+        {
+            Utils::AddLogException($ex);
+            $result = false;
+        }
+        return $result;
     }
-    
+
 }

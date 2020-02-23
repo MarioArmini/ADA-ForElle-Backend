@@ -111,6 +111,7 @@ class HelpRequestController extends \yii\rest\Controller
             $obj->active = 1;
             if($obj->save(false))
             {
+                $devices = [];
                 $helpRequestNotifications = [];
                 $pRs = \app\models\UserFriends::find()->where(["userId" => $obj->userId])->all();
                 foreach($pRs as $r)
@@ -123,6 +124,16 @@ class HelpRequestController extends \yii\rest\Controller
                     $hrd->dateLastSeen = null;
                     $hrd->save(false);
                     $helpRequestNotifications[] = $hrd;
+
+                    $friend = Users::findOne($r->friendId);
+                    if($friend != null)
+                    {
+                        if(strlen(trim($friend->tokenDevice)) > 0) $devices[] = trim($friend->tokenDevice);
+                    }
+                }
+                if(count($devices) > 0)
+                {
+                    $obj->sendNotifica($devices);
                 }
 
                 return [
