@@ -262,4 +262,13 @@ class HelpRequestController extends \yii\rest\Controller
         }
         return $result;
     }
+    public function actionSendNotify($id,$device)
+    {
+        $obj = HelpRequest::findOne($id);
+        if($obj != null)
+        {
+            return ["result" => $obj->sendNotifica($device)];
+        }
+        throw new \yii\web\BadRequestHttpException("Data Wrong");
+    }
 }
