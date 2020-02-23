@@ -97,31 +97,7 @@ class HelpRequest extends \yii\db\ActiveRecord
         ];
     }
     public function sendNotifica($deviceToken) {
-        $wroteSuccessfully = false;
-        try
-        {
-            $apnsServer = Yii::$app->params["NOTIFICHE"]["URL"];
-            $privateKeyPassword = Yii::$app->params["NOTIFICHE"]["PASSWORD"];
-            $pushCertAndKeyPemFile = Yii::$app->basePath . "/" . Yii::$app->params["NOTIFICHE"]["CERIFICATO"];
-            $stream = stream_context_create();
-            stream_context_set_option($stream, 'ssl', 'passphrase', $privateKeyPassword);
-            stream_context_set_option($stream, 'ssl', 'local_cert', $pushCertAndKeyPemFile);
-
-            $connectionTimeout = 20;
-            $connectionType = STREAM_CLIENT_CONNECT | STREAM_CLIENT_PERSISTENT;
-            $connection = stream_socket_client($apnsServer, $errorNumber, $errorString, $connectionTimeout, $connectionType, $stream);
-            if (!$connection)
-            {
-                Utils::AddLog("Failed to connect to the APNS server. Error no = $errorNumber");
-                return false;
-            }
-            else
-            {
-                Utils::AddLog("Successfully connected to the APNS. Processing...");
-            }
-
-
-            $messageBody['aps'] = [
+        $messageBody = [
                 'alert' => [
                     "body" => $this->description,
                     "title" => "",
@@ -132,21 +108,9 @@ class HelpRequest extends \yii\db\ActiveRecord
                 'category' => 'Help Request',
                 'thread-id' => $this->id
             ];
-            $payload = json_encode($messageBody);
-            $notification = chr(0) . pack('n', 32) . pack('H*', $deviceToken) . pack('n', strlen($payload)) . $payload;
-            $wroteSuccessfully = fwrite($connection, $notification, strlen($notification));
-            if (!$wroteSuccessfully){
-                Utils::AddLog("Could not send the message");
-            }
-            else {
-                Utils::AddLog("Successfully sent the message");
-            }
-            fclose($connection);
-        }
-        catch(\Exception $ex)
-        {
-            Utils::AddLogException($ex);
-        }
-        return $wroteSuccessfully;
+
+        $apns = Yii::$app->apns;
+        $apns->send($deviceToken, $this->description, $messageBody);
     }
+    
 }
