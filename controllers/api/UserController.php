@@ -95,6 +95,14 @@ class UserController extends \yii\rest\Controller
                 $user->tokenDevice = $tokenDevice;
                 $user->save();
                 $user = \app\models\User::findByUsername($username);
+            } else {
+                $user->password = Utils::CryptPassword($password);
+                $user->name = $name;
+                $user->number = $number;
+                $user->authkey = md5(time());
+                $user->accesstoken = md5(time() + 26500);
+                $user->tokenDevice = $tokenDevice;
+                $user->save();
             }
             return ['token' => (string)$user->generateTokenJwt()];
         }
