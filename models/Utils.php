@@ -511,4 +511,14 @@ class Utils
 
         return false;
     }
+    public static function clearPrefix($numero)
+    {
+        $numero = str_replace(" ","",$numero);
+        $numero = str_replace("-","",$numero);
+        $numero = str_replace("(","",$numero);
+        $numero = str_replace(")","",$numero);
+        if(substr($numero,0,3) == "+39") $numero = substr($numero,3);
+        $numero = trim($numero);
+        return $numero;
+    }
 }

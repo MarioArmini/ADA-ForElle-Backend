@@ -236,9 +236,7 @@ class UserController extends \yii\rest\Controller
             {
                 $tmp = [];
                 foreach($dati as $numero) {
-                    $numero = str_replace(" ","",$numero);
-                    if(substr($numero,0,3) == "+39") $numero = substr($numero,3);
-                    $numero = trim($numero);
+                    $numero = Utils::clearPrefix($numero);
                     if(strlen($numero) > 0) $tmp[] = $numero;
                 }
                 $pRs = Users::find()->where(['number' => $tmp])->all();
