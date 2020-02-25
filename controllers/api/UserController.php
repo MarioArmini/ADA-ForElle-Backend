@@ -234,7 +234,14 @@ class UserController extends \yii\rest\Controller
             $user = \app\models\Users::findOne(Utils::GetUserID());
             if($user != null)
             {
-                $pRs = Users::find()->where(['number' => $dati])->all();
+                $tmp = [];
+                foreach($dati as $numero) {
+                    $numero = str_replace(" ","",$numero);
+                    if(substr($numero,0,3) == "+39") $numero = substr($numero,3);
+                    $numero = trim($numero);
+                    if(strlen($numero) > 0) $tmp[] = $numero;
+                }
+                $pRs = Users::find()->where(['number' => $tmp])->all();
                 $result = [];
                 foreach($pRs as $r) {
                     $result[] = $r->getJson();
