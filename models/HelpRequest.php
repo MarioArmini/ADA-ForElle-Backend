@@ -106,6 +106,7 @@ class HelpRequest extends \yii\db\ActiveRecord
             $params = [
                 'sound' => 'alert',
                 'badge' => 1,
+                'mutable-content' => 1,
                 ];
             $customParams = [
                 'category' => 'Help Request',
