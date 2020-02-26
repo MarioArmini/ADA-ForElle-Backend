@@ -132,35 +132,40 @@ class UserController extends \yii\rest\Controller
 
             $dati = $j->decode($body);
 
-            $friendId = intval(Utils::GetVal($dati,"friendId"));
+            $friendIds = Utils::GetVal($dati,"friendId");
+            if(!is_array($friendIds)) throw new \yii\web\BadRequestHttpException("Data Wrong");
 
             $user = \app\models\Users::findOne(Utils::GetUserID());
-            $friend = \app\models\Users::findOne($friendId);
-            if($user != null && $friend != null)
+            if($user != null && count($friendIds) > 0)
             {
-                $obj = \app\models\UserFriends::findOne(["userId" => $user->id, "friendId" => $friendId]);
-                if($obj == null)
+                $friends = [];
+                foreach($friendIds as $friendId)
                 {
-                    $obj = new \app\models\UserFriends();
-                    $obj->userId = $user->id;
-                    $obj->friendId = $friendId;
-                    if($obj->save(false))
+                    $friend = \app\models\Users::findOne($friendId);
+                    $obj = \app\models\UserFriends::findOne(["userId" => $user->id, "friendId" => $friendId]);
+                    if($obj == null)
                     {
-                        return [
+                        $obj = new \app\models\UserFriends();
+                        $obj->userId = $user->id;
+                        $obj->friendId = $friendId;
+                        if($obj->save(false))
+                        {
+                            $friends = [
+                                "success" => true,
+                                "id" => $obj->id,
+                                "friend" => $friend->getJson()
+                                ];
+                        }
+                    }
+                    else  {
+                        $friends = [
                             "success" => true,
                             "id" => $obj->id,
                             "friend" => $friend->getJson()
                             ];
                     }
                 }
-                else
-                {
-                    return [
-                            "success" => true,
-                            "id" => $obj->id,
-                            "friend" => $friend->getJson()
-                            ];
-                }
+                return $friends;
             }
         }
 
