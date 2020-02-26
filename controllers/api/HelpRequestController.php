@@ -242,15 +242,7 @@ class HelpRequestController extends \yii\rest\Controller
     }
     public function actionDownload($key)
     {
-        /*$id = Utils::CryptString("10");
-        echo($id);
-        $id = Utils::DecryptString($id);
-        echo($id);
-        exit;*/
-        $id = Utils::DecryptString($key);
-        //echo($id);
-        //exit;
-        $obj = HelpRequestDetails::findOne($id);
+        $obj = HelpRequestDetails::findOne(["tokenKey" => $key]);
         if($obj != null)
         {
             $request = HelpRequest::findOne($obj->helpRequestId);

@@ -36,6 +36,7 @@ class HelpRequestDetails extends \yii\db\ActiveRecord
             [['lat', 'lon'], 'number'],
             [['dateInsert'], 'safe'],
             [['audioFileUrl'], 'string', 'max' => 1024],
+            [['tokenKey'], 'string', 'max' => 255],
             [['helpRequestId'], 'exist', 'skipOnError' => true, 'targetClass' => HelpRequest::className(), 'targetAttribute' => ['helpRequestId' => 'id']],
         ];
     }
@@ -52,6 +53,7 @@ class HelpRequestDetails extends \yii\db\ActiveRecord
             'lon' => Yii::t('app', 'Lon'),
             'audioFileUrl' => Yii::t('app', 'Audio File Url'),
             'dateInsert' => Yii::t('app', 'Date Insert'),
+            'tokenKey' => Yii::t('app', 'Token'),
         ];
     }
 
@@ -84,7 +86,8 @@ class HelpRequestDetails extends \yii\db\ActiveRecord
                 file_put_contents($this->getFullPath() . $filename,$buf);
                 Utils::Chmod($filename);
 
-                $this->audioFileUrl = Yii::$app->params["SITE_URL"] . "api/help-request/download?key=" . Utils::CryptString($this->id);
+                $this->tokenKey = Yii::$app->security->generateRandomString(64);
+                $this->audioFileUrl = Yii::$app->params["SITE_URL"] . "api/help-request/download?key=" . $this->tokenKey;
                 return $this->save(false);
             }
         }
