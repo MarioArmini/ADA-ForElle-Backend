@@ -35,7 +35,7 @@ class HelpRequestController extends \yii\rest\Controller
             $behaviors['authenticator'] = [
                 'class' => JwtHttpBearerAuth::class,
                 'optional' => [
-                    'create',
+                    'create','download'
                 ],
             ];
         }
