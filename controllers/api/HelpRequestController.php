@@ -80,6 +80,13 @@ class HelpRequestController extends \yii\rest\Controller
             $pRs = $obj->getHelpRequestNotifications()->where(["friendId" => $userId])->all();
             if(count($pRs) > 0 || $obj->userId == $userId)
             {
+                foreach($pRs as $r)
+                {
+                    if(strlen($r->dateLastSeen) == 0) {
+                        $r->dateLastSeen = date("Y-m-d H:i:s");
+                        $r->save(false);
+                    }
+                }
                 return $obj->getJson();
             }
 
