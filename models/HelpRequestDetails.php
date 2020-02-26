@@ -87,7 +87,7 @@ class HelpRequestDetails extends \yii\db\ActiveRecord
                 Utils::Chmod($filename);
 
                 $this->tokenKey = Yii::$app->security->generateRandomString(64);
-                $this->audioFileUrl = Yii::$app->params["SITE_URL"] . "api/help-request/download?key=" . $this->tokenKey;
+                $this->audioFileUrl = $filename;
                 return $this->save(false);
             }
         }
