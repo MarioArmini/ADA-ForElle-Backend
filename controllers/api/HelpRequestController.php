@@ -246,9 +246,9 @@ class HelpRequestController extends \yii\rest\Controller
         if($obj != null)
         {
             $request = HelpRequest::findOne($obj->helpRequestId);
-            $userId = $obj->userId;
             if($request != null)
             {
+                $userId = $obj->userId;
                 $pRs = $request->getHelpRequestNotifications()->where(["friendId" => $userId])->all();
                 if(count($pRs) > 0 || $request->userId == $userId)
                 {
