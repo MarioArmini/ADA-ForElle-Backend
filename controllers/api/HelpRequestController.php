@@ -242,12 +242,19 @@ class HelpRequestController extends \yii\rest\Controller
     }
     public function actionDownload($key)
     {
+        /*$id = Utils::CryptString("10");
+        echo($id);
+        $id = Utils::DecryptString($id);
+        echo($id);
+        exit;*/
         $id = Utils::DecryptString($key);
+        //echo($id);
+        //exit;
         $obj = HelpRequestDetails::findOne($id);
         if($obj != null)
         {
-            $userId = Utils::GetUserID();
             $request = HelpRequest::findOne($obj->helpRequestId);
+            $userId = $obj->userId;
             if($request != null)
             {
                 $pRs = $request->getHelpRequestNotifications()->where(["friendId" => $userId])->all();
