@@ -102,9 +102,9 @@ class HelpRequest extends \yii\db\ActiveRecord
         $result = false;
         try {
             if(is_array($deviceToken))
-                Utils::AddLog("sendNotifica ->", implode(" - ",$deviceToken));
+                Utils::AddLog("sendNotifica ->" . implode(" - ",$deviceToken));
             else
-                Utils::AddLog("sendNotifica ->", $deviceToken);
+                Utils::AddLog("sendNotifica ->" . $deviceToken);
             $messageBody = [
                 "title" => "Help Request",
                 "body" => $this->description,
