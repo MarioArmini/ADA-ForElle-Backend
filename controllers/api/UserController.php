@@ -150,7 +150,7 @@ class UserController extends \yii\rest\Controller
                         $obj->friendId = $friendId;
                         if($obj->save(false))
                         {
-                            $friends = [
+                            $friends[] = [
                                 "success" => true,
                                 "id" => $obj->id,
                                 "friend" => $friend->getJson()
@@ -158,7 +158,7 @@ class UserController extends \yii\rest\Controller
                         }
                     }
                     else  {
-                        $friends = [
+                        $friends[] = [
                             "success" => true,
                             "id" => $obj->id,
                             "friend" => $friend->getJson()
