@@ -101,6 +101,10 @@ class HelpRequest extends \yii\db\ActiveRecord
     public function sendNotifica($deviceToken) {
         $result = false;
         try {
+            if(is_array($deviceToken))
+                Utils::AddLog("sendNotifica ->", implode(" - ",$deviceToken));
+            else
+                Utils::AddLog("sendNotifica ->", $deviceToken);
             $messageBody = [
                 "title" => "Help Request",
                 "body" => $this->description,
@@ -121,6 +125,14 @@ class HelpRequest extends \yii\db\ActiveRecord
                 $apns->send($deviceToken, $messageBody,$customParams,$params);
 
             $result = $apns->success;
+            if($result)
+            {
+                Utils::AddLog("sendNotifica OK");
+            }
+            else
+            {
+                Utils::AddLog("sendNotifica KO");
+            }
         }
         catch(\Exception $ex)
         {
