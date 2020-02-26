@@ -84,7 +84,7 @@ class HelpRequestDetails extends \yii\db\ActiveRecord
                 file_put_contents($this->getFullPath() . $filename,$buf);
                 Utils::Chmod($filename);
 
-                $this->audioFileUrl = $filename;
+                $this->audioFileUrl = Yii::$app->params["SITE_URL"] . "/help-request/download?key=" . Utils::CryptPassword($this->id);
                 return $this->save(false);
             }
         }

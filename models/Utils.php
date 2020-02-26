@@ -521,4 +521,19 @@ class Utils
         $numero = trim($numero);
         return $numero;
     }
+
+    public static function CryptString($s)
+    {
+        $s = base64_encode(Yii::$app->security->encryptByPassword($s,Yii::$app->params["PASSWORD_KEY"]));
+
+        return $s;
+    }
+
+    public static function DecryptString($s)
+    {
+        $s = base64_decode($s);
+        $s = Yii::$app->security->decryptByPassword($s,Yii::$app->params["PASSWORD_KEY"]);
+
+        return $s;
+    }
 }

@@ -240,6 +240,29 @@ class HelpRequestController extends \yii\rest\Controller
         }
         throw new \yii\web\BadRequestHttpException("Data Wrong");
     }
+    public function actionDownload($key)
+    {
+        $id = Utils::DecryptString($key);
+        $obj = HelpRequestDetails::findOne($id);
+        if($obj != null)
+        {
+            $userId = Utils::GetUserID();
+            $request = HelpRequest::findOne($obj->helpRequestId);
+            if($request != null)
+            {
+                $pRs = $request->getHelpRequestNotifications()->where(["friendId" => $userId])->all();
+                if(count($pRs) > 0 || $request->userId == $userId)
+                {
+                    return Yii::$app->response->sendFile($obj->getFullPathFile(),$obj->audioFileUrl,["inline" => true]);
+                }
+                else
+                {
+                    Utils::AddLog("actionGetAudioFile utente non corretto : " . $userId .  " " . $request->userId);
+                }
+            }
+        }
+        throw new \yii\web\BadRequestHttpException("Data Wrong");
+    }
     public function actionCurrentRequests()
     {
         $result = [];
