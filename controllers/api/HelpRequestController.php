@@ -204,6 +204,7 @@ class HelpRequestController extends \yii\rest\Controller
                 $obj->lon = $lon;
                 $obj->dateInsert = date("Y-m-d H:i:s");
                 $obj->audioFileUrl = "";
+                $obj->tokenKey = "";
 
                 if($obj->save(false))
                 {
