@@ -90,10 +90,12 @@ class HelpRequest extends \yii\db\ActiveRecord
     {
         $helpRequestDetails = $this->getHelpRequestDetails()->all();
         $helpRequestNotifications = $this->getHelpRequestNotifications()->all();
+
         return [
             "helpRequest" => $this,
             "helpRequestDetails" => $helpRequestDetails,
             "helpRequestNotifications" => $helpRequestNotifications,
+            "user" => $this->getUserJson(),
         ];
     }
     public function sendNotifica($deviceToken) {
@@ -127,5 +129,9 @@ class HelpRequest extends \yii\db\ActiveRecord
         }
         return $result;
     }
-
+    function getUserJson() {
+        $user = Users::findOne($this->userId);
+        if($user != null) return $user->getJson();
+        return null;
+    }
 }
