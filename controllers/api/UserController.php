@@ -141,6 +141,9 @@ class UserController extends \yii\rest\Controller
                 $friends = [];
                 foreach($friendIds as $friendId)
                 {
+                    //non aggiungo se stesso
+                    if($friendId == $user->id) continue;
+                    
                     $friend = \app\models\Users::findOne($friendId);
                     $obj = \app\models\UserFriends::findOne(["userId" => $user->id, "friendId" => $friendId]);
                     if($obj == null)
