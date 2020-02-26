@@ -62,7 +62,20 @@ class HelpRequest extends \yii\db\ActiveRecord
             'active' => Yii::t('app', 'Active'),
         ];
     }
-
+    function beforeDelete() {
+        if(!parent::beforeDelete()) return false;
+        $pRs = $this->getHelpRequestDetails()->all();
+        foreach($pRs as $r)
+        {
+            $r->delete();
+        }
+        $pRs = $this->getHelpRequestNotifications()->all();
+        foreach($pRs as $r)
+        {
+            $r->delete();
+        }
+        return true;
+    }
     /**
      * @return \yii\db\ActiveQuery
      */

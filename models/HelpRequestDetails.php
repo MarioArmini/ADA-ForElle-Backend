@@ -56,7 +56,16 @@ class HelpRequestDetails extends \yii\db\ActiveRecord
             'tokenKey' => Yii::t('app', 'Token'),
         ];
     }
+    function beforeDelete() {
+        if(!parent::beforeDelete()) return false;
 
+        if(strlen($this->audioFileUrl) > 0)
+        {
+            Utils::delFile($this->getFullPathFile());
+        }
+
+        return true;
+    }
     /**
      * @return \yii\db\ActiveQuery
      */

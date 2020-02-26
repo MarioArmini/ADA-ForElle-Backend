@@ -536,4 +536,43 @@ class Utils
 
         return $s;
     }
+    public static function delFile($dir,$filter = "")
+    {
+        try
+        {
+            if(is_dir($dir))
+            {
+                if(strlen($filter) > 0)
+                {
+                    $files = glob($dir . $filter);
+                    foreach ($files as $file)
+                    {
+                        if(!is_dir("$file"))
+                        {
+                            unlink("$file");
+                        }
+                    }
+                }
+                else
+                {
+                    $files = array_diff(scandir($dir), array('.','..'));
+                    foreach ($files as $file)
+                    {
+                        if(!is_dir("$dir/$file"))
+                        {
+                            unlink("$dir/$file");
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if(file_exists($dir)) unlink($dir);
+            }
+        }
+        catch(\Exception $ex)
+        {
+            Utils::AddLogException($ex);
+        }
+    }
 }

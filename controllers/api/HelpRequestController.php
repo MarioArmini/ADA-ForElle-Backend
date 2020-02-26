@@ -312,4 +312,31 @@ class HelpRequestController extends \yii\rest\Controller
         }
         throw new \yii\web\BadRequestHttpException("Data Wrong");
     }
+    public function actionDelete($id)
+    {
+        $userId = Utils::GetUserID();
+        $obj = HelpRequest::findOne($id);
+        if($obj != null)
+        {
+            $pRs = $obj->getHelpRequestNotifications()->where(["friendId" => $userId])->all();
+            if(count($pRs) > 0 || $obj->userId == $userId)
+            {
+                if($obj->userId == $userId)
+                {
+                    $obj->delete();
+                }
+                else
+                {
+                    foreach($pRs as $r)
+                    {
+                        $r->delete();
+                    }
+                }
+
+                return $obj->getJson();
+            }
+
+        }
+        throw new \yii\web\BadRequestHttpException("Data Wrong");
+    }
 }
