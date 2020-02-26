@@ -62,4 +62,8 @@ class Users extends \yii\db\ActiveRecord
             "tokenDevice" => trim($this->tokenDevice),
         ];
     }
+    public function isValidToken() {
+        if(strlen(trim($this->tokenDevice)) < 10) return false;
+        return true;
+    }
 }

@@ -135,7 +135,7 @@ class HelpRequestController extends \yii\rest\Controller
                     $friend = Users::findOne($r->friendId);
                     if($friend != null)
                     {
-                        if(strlen(trim($friend->tokenDevice)) > 0) $devices[] = trim($friend->tokenDevice);
+                        if(strlen(trim($friend->tokenDevice)) > 0 && $friend->isValidToken()) $devices[] = trim($friend->tokenDevice);
                     }
                 }
                 if(count($devices) > 0)
