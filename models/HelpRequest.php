@@ -132,6 +132,7 @@ class HelpRequest extends \yii\db\ActiveRecord
             else
             {
                 Utils::AddLog("sendNotifica KO");
+                Utils::AddLog($apns->errors);
             }
         }
         catch(\Exception $ex)
