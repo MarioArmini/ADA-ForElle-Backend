@@ -291,7 +291,7 @@ class HelpRequestController extends \yii\rest\Controller
     public function actionIndex()
     {
         $result = [];
-        $sql = "SELECT h.*
+        $sql = "SELECT distinct h.*
                 FROM HelpRequest h
                 LEFT JOIN HelpRequestNotifications hrn ON hrn.helpRequestId = h.id
                 WHERE hrn.friendId = " . Utils::GetUserID() . " OR h.userId = " . Utils::GetUserID();
