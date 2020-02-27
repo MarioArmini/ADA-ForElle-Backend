@@ -288,13 +288,16 @@ class HelpRequestController extends \yii\rest\Controller
         }
         return $result;
     }
-    public function actionIndex()
+    public function actionIndex($start = 0,$limit = 20)
     {
         $result = [];
         $sql = "SELECT distinct h.*
                 FROM HelpRequest h
                 LEFT JOIN HelpRequestNotifications hrn ON hrn.helpRequestId = h.id
-                WHERE hrn.friendId = " . Utils::GetUserID() . " OR h.userId = " . Utils::GetUserID();
+                WHERE hrn.friendId = " . Utils::GetUserID() . " OR h.userId = " . Utils::GetUserID() . "
+                ORDER BY h.id DESC
+                LIMIT " . $start . "," . $limit;
+
 
         $pRs = HelpRequest::findBySql($sql)->all();
         foreach($pRs as $r)
