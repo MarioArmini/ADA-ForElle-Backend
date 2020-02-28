@@ -143,7 +143,7 @@ class UserController extends \yii\rest\Controller
                 {
                     //non aggiungo se stesso
                     if($friendId == $user->id) continue;
-                    
+
                     $friend = \app\models\Users::findOne($friendId);
                     $obj = \app\models\UserFriends::findOne(["userId" => $user->id, "friendId" => $friendId]);
                     if($obj == null)
@@ -253,6 +253,28 @@ class UserController extends \yii\rest\Controller
                     $result[] = $r->getJson();
                 }
                 return $result;
+            }
+        }
+
+        throw new \yii\web\BadRequestHttpException("Data Wrong");
+    }
+    public function actionUpdateToken()
+    {
+        if(Yii::$app->request->isPost)
+        {
+            $body = trim(Yii::$app->request->rawBody);
+            $j = new \yii\helpers\Json();
+
+            $dati = $j->decode($body);
+
+            $tokenDevice = Utils::GetVal($dati,"tokenDevice");
+            if(strlen($tokenDevice) == 0) throw new \yii\web\BadRequestHttpException("Data Wrong");
+
+            $user = \app\models\Users::findOne(Utils::GetUserID());
+            if($user != null)
+            {
+                $user->tokenDevice = $tokenDevice;
+                if($user->save(false)) return ["success" => true];
             }
         }
 
