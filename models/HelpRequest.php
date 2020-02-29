@@ -116,66 +116,23 @@ class HelpRequest extends \yii\db\ActiveRecord
         ];
     }
     public function sendNotifica($deviceToken,$category) {
-        $result = false;
-        try {
-            $sound = 'alert';
-            $badge = 1;
-            switch($category)
-            {
-                case self::CATEGORY_HELP_REQUEST:
-                    $sound = 'alert';
-                    $badge = 1;
-                    break;
-                case self::CATEGORY_END_REQUEST:
-                    $sound = 'alert';
-                    $badge = 0;
-                    break;
-                case self::CATEGORY_UPDATE_REQUEST:
-                    $sound = 'alert';
-                    $badge = 0;
-                    break;
-            }
-            if(is_array($deviceToken))
-                Utils::AddLog("sendNotifica ->" . implode(" - ",$deviceToken));
-            else
-                Utils::AddLog("sendNotifica ->" . $deviceToken);
-            $messageBody = [
-                "title" => "Help Request",
-                "body" => $this->description,
-            ];
-            $params = [
-                'sound' => $sound,
-                'badge' => $badge,
-                //'mutable-content' => 1,
-                ];
-            $customParams = [
-                'category' => $category,
-                'HelpRequest' => $this->id
-            ];
-            $apns = Yii::$app->apns;
-            if(is_array($deviceToken))
-                $apns->sendMulti($deviceToken, $messageBody,$customParams,$params);
-            else
-                $apns->send($deviceToken, $messageBody,$customParams,$params);
-
-            $result = $apns->success;
-            if($result)
-            {
-                Utils::AddLog("sendNotifica OK");
-            }
-            else
-            {
-                Utils::AddLog("sendNotifica KO");
-                Utils::AddLog($apns->errors);
-            }
+        try
+        {
+            Yii::$app->queue->push(new \app\commands\NotifyJob([
+                                'devices' => $deviceToken,
+                                'category' => $category,
+                                'helpRequestId' => $this->id,
+                                'description' => $this->description,
+                                ]));
+            return true;
         }
         catch(\Exception $ex)
         {
-            Utils::AddLogException($ex);
-            $result = false;
+            Utils::AddLog($ex);
         }
-        return $result;
+        return false;
     }
+
     function getUserJson() {
         $user = Users::findOne($this->userId);
         if($user != null) return $user->getJson();
