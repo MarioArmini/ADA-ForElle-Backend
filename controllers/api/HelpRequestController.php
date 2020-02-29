@@ -140,7 +140,7 @@ class HelpRequestController extends \yii\rest\Controller
                 }
                 if(count($devices) > 0)
                 {
-                    $obj->sendNotifica($devices);
+                    $obj->sendNotifica($devices,HelpRequest::CATEGORY_HELP_REQUEST);
                 }
 
                 return [
@@ -173,6 +173,10 @@ class HelpRequestController extends \yii\rest\Controller
                 if($active >= 0) $obj->active = $active;
                 if($obj->save(false))
                 {
+                    if($active == 0)
+                    {
+                        $obj->sendNotificaFriends(HelpRequest::CATEGORY_END_REQUEST);
+                    }
                     return $obj->getJson();
                 }
             }
@@ -196,7 +200,8 @@ class HelpRequestController extends \yii\rest\Controller
             $audioFile = Utils::GetVal($dati,"audioFile");
             $type = Utils::GetVal($dati,"type");
 
-            if($helpRequestId > 0)
+            $helpRequest = HelpRequest::findOne($helpRequestId);
+            if($helpRequestId > 0 && $helpRequest != null)
             {
                 $obj = new HelpRequestDetails();
                 $obj->helpRequestId = $helpRequestId;
@@ -211,6 +216,7 @@ class HelpRequestController extends \yii\rest\Controller
                     if(strlen($audioFile) > 0)
                     {
                         $obj->saveAudio($audioFile,$type);
+                        $helpRequest->sendNotificaFriends(HelpRequest::CATEGORY_UPDATE_REQUEST);
                     }
                     return $obj;
                 }
@@ -306,12 +312,14 @@ class HelpRequestController extends \yii\rest\Controller
         }
         return $result;
     }
-    public function actionSendNotify($id,$device)
+    public function actionSendNotify($id,$device,$category = "")
     {
         $obj = HelpRequest::findOne($id);
         if($obj != null)
         {
-            return ["result" => $obj->sendNotifica($device)];
+            if(strlen($category) == 0) $category = HelpRequest::CATEGORY_HELP_REQUEST;
+
+            return ["result" => $obj->sendNotifica($device,$category)];
         }
         throw new \yii\web\BadRequestHttpException("Data Wrong");
     }

@@ -23,6 +23,10 @@ use Yii;
  */
 class HelpRequest extends \yii\db\ActiveRecord
 {
+    const CATEGORY_HELP_REQUEST = "Help Request";
+    const CATEGORY_END_REQUEST = "End Request";
+    const CATEGORY_UPDATE_REQUEST = "Update Request";
+
     /**
      * {@inheritdoc}
      */
@@ -111,9 +115,26 @@ class HelpRequest extends \yii\db\ActiveRecord
             "user" => $this->getUserJson(),
         ];
     }
-    public function sendNotifica($deviceToken) {
+    public function sendNotifica($deviceToken,$category) {
         $result = false;
         try {
+            $sound = 'alert';
+            $badge = 1;
+            switch($category)
+            {
+                case CATEGORY_HELP_REQUEST:
+                    $sound = 'alert';
+                    $badge = 1;
+                    break;
+                case CATEGORY_END_REQUEST:
+                    $sound = 'alert';
+                    $badge = 0;
+                    break;
+                case CATEGORY_UPDATE_REQUEST:
+                    $sound = 'alert';
+                    $badge = 0;
+                    break;
+            }
             if(is_array($deviceToken))
                 Utils::AddLog("sendNotifica ->" . implode(" - ",$deviceToken));
             else
@@ -123,12 +144,12 @@ class HelpRequest extends \yii\db\ActiveRecord
                 "body" => $this->description,
             ];
             $params = [
-                'sound' => 'alert',
-                'badge' => 1,
+                'sound' => $sound,
+                'badge' => $badge,
                 //'mutable-content' => 1,
                 ];
             $customParams = [
-                'category' => 'Help Request',
+                'category' => $category,
                 'HelpRequest' => $this->id
             ];
             $apns = Yii::$app->apns;
@@ -159,5 +180,45 @@ class HelpRequest extends \yii\db\ActiveRecord
         $user = Users::findOne($this->userId);
         if($user != null) return $user->getJson();
         return null;
+    }
+    function sendNotificaFriends($category,$lastSeenValid = false) {
+        try
+        {
+            $devices = [];
+
+            $sql = "SELECT u.tokenDevice,r.dateLastSeen
+                    FROM HelpRequestNotifications r
+                    LEFT JOIN Users u ON u.id = r.friendId
+                    WHERE r.helpRequestId = " . intval($this->id);
+
+            $pRs = Yii::$app->db->createCommand($sql)->queryAll();
+            foreach($pRs as $r)
+            {
+                $tokenDevice = trim($r["tokenDevice"]);
+                $dateLastSeen = trim($r["dateLastSeen"]);
+                if ($lastSeenValid)
+                {
+                    if(strlen($dateLastSeen) == 0) continue;
+                }
+
+                $friend = Users::findOne($r->friendId);
+                if($friend != null)
+                {
+                    if(strlen(trim($tokenDevice)) > 0 && Users::checkValidToken($tokenDevice))
+                    {
+                        $devices[] = trim($tokenDevice);
+                    }
+                }
+            }
+            if(count($devices) > 0)
+            {
+                $this->sendNotifica($devices,$category);
+            }
+        }
+        catch(\Exception $ex)
+        {
+            Utils::AddLogException($ex);
+        }
+
     }
 }
