@@ -119,7 +119,7 @@ class HelpRequest extends \yii\db\ActiveRecord
         try
         {
             Yii::$app->queue->push(new \app\commands\NotifyJob([
-                                'devices' => $deviceToken,
+                                'deviceToken' => $deviceToken,
                                 'category' => $category,
                                 'helpRequestId' => $this->id,
                                 'description' => $this->description,
