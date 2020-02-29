@@ -122,15 +122,15 @@ class HelpRequest extends \yii\db\ActiveRecord
             $badge = 1;
             switch($category)
             {
-                case CATEGORY_HELP_REQUEST:
+                case self::CATEGORY_HELP_REQUEST:
                     $sound = 'alert';
                     $badge = 1;
                     break;
-                case CATEGORY_END_REQUEST:
+                case self::CATEGORY_END_REQUEST:
                     $sound = 'alert';
                     $badge = 0;
                     break;
-                case CATEGORY_UPDATE_REQUEST:
+                case self::CATEGORY_UPDATE_REQUEST:
                     $sound = 'alert';
                     $badge = 0;
                     break;
@@ -200,7 +200,7 @@ class HelpRequest extends \yii\db\ActiveRecord
                 {
                     if(strlen($dateLastSeen) == 0) continue;
                 }
-                
+
                 if(strlen(trim($tokenDevice)) > 0 && Users::checkValidToken($tokenDevice))
                 {
                     $devices[] = trim($tokenDevice);
