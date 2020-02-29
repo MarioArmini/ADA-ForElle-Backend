@@ -18,13 +18,13 @@ class NotifyJob extends yii\base\BaseObject implements \yii\queue\JobInterface
 
     public function execute($queue)
     {
-        Utils::AddLog("NotifyJob->execute: START " . $this->helpRequestId,'info',false,'log-ocpi');
+        Utils::AddLog("NotifyJob->execute: START " . $this->helpRequestId,'info',false,'log-job');
 
         try
         {
             $this->sendNotificaBatch();
 
-            Utils::AddLog("NotifyJob->execute: END " . $this->helpRequestId,'info',false,'log-jobi');
+            Utils::AddLog("NotifyJob->execute: END " . $this->helpRequestId,'info',false,'log-job');
         }
         catch(\Exception $e)
         {
