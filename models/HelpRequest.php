@@ -200,14 +200,10 @@ class HelpRequest extends \yii\db\ActiveRecord
                 {
                     if(strlen($dateLastSeen) == 0) continue;
                 }
-
-                $friend = Users::findOne($r->friendId);
-                if($friend != null)
+                
+                if(strlen(trim($tokenDevice)) > 0 && Users::checkValidToken($tokenDevice))
                 {
-                    if(strlen(trim($tokenDevice)) > 0 && Users::checkValidToken($tokenDevice))
-                    {
-                        $devices[] = trim($tokenDevice);
-                    }
+                    $devices[] = trim($tokenDevice);
                 }
             }
             if(count($devices) > 0)
