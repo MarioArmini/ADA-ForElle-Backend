@@ -338,7 +338,7 @@ class HelpRequestController extends \yii\rest\Controller
                         }
                     }
 
-                    return $obj->getJson();
+                    return ["success" => true];
                 }
 
             }
