@@ -580,6 +580,23 @@ class Utils
         if(strlen($s) == 0) return "";
         $t = strtotime($s);
         if($t == 0) return "";
-        return date("c",$t);
+        return self::ToUTCz($t);
+    }
+
+    public static function ToUTC1($t = 0)
+    {
+        if($t == 0) $t = time();
+        $t = new \DateTime(date("Y-m-d H:i:s",$t));
+        $t->setTimezone(new \DateTimeZone("UTC"));
+
+        return $t->format("Y-m-d\TH:i:s\Z");
+    }
+    public static function ToUTCz($t = 0)
+    {
+        if($t == 0) $t = time();
+        $t = new \DateTime(date("Y-m-d H:i:s",$t));
+        $t->setTimezone(new \DateTimeZone("UTC"));
+
+        return $t->format("Y-m-d\TH:i:s.000\Z");
     }
 }
