@@ -105,13 +105,25 @@ class HelpRequest extends \yii\db\ActiveRecord
     }
     public function getJson()
     {
+        $details = [];
+        $notifications = [];
+
         $helpRequestDetails = $this->getHelpRequestDetails()->all();
         $helpRequestNotifications = $this->getHelpRequestNotifications()->all();
 
+        foreach($helpRequestDetails as $d)
+        {
+            $details[] = $d->getJson();
+        }
+        foreach($helpRequestNotifications as $d)
+        {
+            $notifications[] = $d->getJson();
+        }
+
         return [
-            "helpRequest" => $this,
-            "helpRequestDetails" => $helpRequestDetails,
-            "helpRequestNotifications" => $helpRequestNotifications,
+            "helpRequest" => $this->getObjecJson(),
+            "helpRequestDetails" => $details,
+            "helpRequestNotifications" => $notifications,
             "user" => $this->getUserJson(),
         ];
     }
@@ -173,5 +185,19 @@ class HelpRequest extends \yii\db\ActiveRecord
             Utils::AddLogException($ex);
         }
 
+    }
+    function getObjecJson()
+    {
+        return [
+            'id' => intval($this->id),
+            'userId' => intval($this->userId),
+            'serverity' => intval($this->serverity),
+            'lat' => floatval($this->lat),
+            'lon' => floatval($this->lon),
+            'description' => trim($this->description),
+            'dateInsert' =>  Utils::ToUTC($this->dateInsert),
+            'dateModify' => Utils::ToUTC($this->dateModify),
+            'active' => intval($this->active),
+            ];
     }
 }

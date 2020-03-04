@@ -17,6 +17,7 @@
   <ItemGroup>
     <Compile Include="assets\AppAsset.php" />
     <Compile Include="commands\HelloController.php" />
+    <Compile Include="commands\NotifyJob.php" />
     <Compile Include="config\console.php" />
     <Compile Include="config\db.php" />
     <Compile Include="config\params.php" />

@@ -80,4 +80,15 @@ class HelpRequestNotifications extends \yii\db\ActiveRecord
     {
         return $this->hasOne(HelpRequest::className(), ['id' => 'helpRequestId']);
     }
+    public function getJson()
+    {
+        return [
+            'id' => intval($this->id),
+            'userId' => intval($this->userId),
+            'helpRequestId' => intval($this->helpRequestId),
+            'friendId' => intval($this->friendId),
+            'dateInsert' => Utils::ToUTC($this->dateInsert),
+            'dateLastSeen' => Utils::ToUTC($this->dateLastSeen),
+        ];
+    }
 }

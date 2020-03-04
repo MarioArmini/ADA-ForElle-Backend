@@ -575,4 +575,11 @@ class Utils
             Utils::AddLogException($ex);
         }
     }
+    public static function ToUTC($s)
+    {
+        if(strlen($s) == 0) return "";
+        $t = strtotime($s);
+        if($t == 0) return "";
+        return date("c",$t);
+    }
 }

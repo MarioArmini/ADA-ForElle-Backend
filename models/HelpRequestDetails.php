@@ -106,4 +106,16 @@ class HelpRequestDetails extends \yii\db\ActiveRecord
         }
         return false;
     }
+    public function getJson()
+    {
+        return [
+            'id' => intval($this->id),
+            'helpRequestId' => intval($this->helpRequestId),
+            'lat' => floatval($this->lat),
+            'lon' => floatval($this->lon),
+            'audioFileUrl' => trim($this->audioFileUrl),
+            'dateInsert' => Utils::ToUTC($this->dateInsert),
+            'tokenKey' => trim($this->tokenKey),
+        ];
+    }
 }
