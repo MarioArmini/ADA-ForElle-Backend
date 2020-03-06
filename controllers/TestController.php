@@ -71,7 +71,6 @@ class TestController extends Controller
         if($obj != null)
         {
             $document = Yii::$app->mongodb->getFileCollection()->createDownload($obj["_id"])->toFile($pathFile);
-            ob_clean();
             return Yii::$app->response->sendFile($pathFile);
         }
         echo("<pre>");
