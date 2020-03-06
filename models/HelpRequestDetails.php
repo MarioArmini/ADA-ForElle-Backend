@@ -103,7 +103,7 @@ class HelpRequestDetails extends \yii\db\ActiveRecord
                         "filename" => $filename,
                         "document" => ["helpRequestDetailId" => $this->id, "helpRequestId" => $this->helpRequestId],
                         ])
-                    ->addContent($content)
+                    ->addContent($buf)
                     ->complete();
 
                 Yii::debug($document);
