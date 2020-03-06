@@ -20,6 +20,7 @@
     <Compile Include="commands\NotifyJob.php" />
     <Compile Include="config\console.php" />
     <Compile Include="config\db.php" />
+    <Compile Include="config\dbfiles.php" />
     <Compile Include="config\params.php" />
     <Compile Include="config\test.php" />
     <Compile Include="config\test_db.php" />
@@ -28,6 +29,7 @@
     <Compile Include="controllers\api\UserController.php" />
     <Compile Include="controllers\api\AuthController.php" />
     <Compile Include="controllers\HelprequestController.php" />
+    <Compile Include="controllers\TestController.php" />
     <Compile Include="controllers\SiteController.php" />
     <Compile Include="controllers\UserfriendsController.php" />
     <Compile Include="controllers\UsersController.php" />

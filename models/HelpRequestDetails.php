@@ -3,6 +3,9 @@
 namespace app\models;
 
 use Yii;
+use yii\mongodb\file\Upload;
+use yii\mongodb\Collection;
+use yii\mongodb\file\Query;
 
 /**
  * This is the model class for table "HelpRequestDetails".
@@ -81,8 +84,8 @@ class HelpRequestDetails extends \yii\db\ActiveRecord
     }
     public function getFullPathFile()
     {
-        $path = $this->getFullPath() . $this->audioFileUrl;
-        return $path;
+        //$path = $this->getFullPath() . $this->audioFileUrl;
+        return $this->downloadAudio();
     }
     public function saveAudio($content,$type)
     {
@@ -92,12 +95,25 @@ class HelpRequestDetails extends \yii\db\ActiveRecord
             if(strlen($buf) > 0)
             {
                 $filename = "audio-" . $this->helpRequestId . "-" . $this->id . "." . $type;
+                /*
                 file_put_contents($this->getFullPath() . $filename,$buf);
                 Utils::Chmod($filename);
+                */
+                $document = Yii::$app->mongodb->getFileCollection()->createUpload([
+                        "filename" => $filename,
+                        "document" => ["helpRequestDetailId" => $this->id, "helpRequestId" => $this->helpRequestId],
+                        ])
+                    ->addContent($content)
+                    ->complete();
 
-                $this->tokenKey = Yii::$app->security->generateRandomString(64);
-                $this->audioFileUrl = $filename;
-                return $this->save(false);
+                Yii::debug($document);
+
+                if($document != null)
+                {
+                    $this->tokenKey = Yii::$app->security->generateRandomString(64);
+                    $this->audioFileUrl = $filename;
+                    return $this->save(false);
+                }
             }
         }
         catch(\Exception $ex)
@@ -117,5 +133,24 @@ class HelpRequestDetails extends \yii\db\ActiveRecord
             'dateInsert' => Utils::ToUTC($this->dateInsert),
             'tokenKey' => trim($this->tokenKey),
         ];
+    }
+    public function downloadAudio()
+    {
+        try
+        {
+            $pathFile = "/tmp/" . date("Ymd-His") . "-" . $this->audioFileUrl;
+            $query = new Query();
+            $obj = $query->from('fs')->where(["helpRequestDetailId" => $this->id])->one();
+            if($obj != null)
+            {
+                $document = Yii::$app->mongodb->getFileCollection()->createDownload($obj["_id"])->toFile($pathFile);
+                return $pathFile;
+            }
+        }
+        catch(\Exception $ex)
+        {
+            Utils::AddLogException($ex);
+        }
+        return false;
     }
 }
