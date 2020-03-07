@@ -118,7 +118,7 @@ class HelpRequestController extends \yii\rest\Controller
             $obj->active = 1;
             if($obj->save(false))
             {
-                $obj->publishQueue = "Q" - $obj->userId . "-" . $obj->id . "-" . Yii::$app->security->generateRandomString(32);
+                $obj->publishQueue = "Q-" . $obj->userId . "-" . $obj->id . "-" . Yii::$app->security->generateRandomString(32);
                 $obj->save(false);
                 $devices = [];
                 $helpRequestNotifications = [];
