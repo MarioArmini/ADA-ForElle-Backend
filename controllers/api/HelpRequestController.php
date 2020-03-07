@@ -358,10 +358,10 @@ class HelpRequestController extends \yii\rest\Controller
     }
     public function actionParameterMqtt()
     {
-        $host =Yii::$app->params["MQTT"]["HOST"];
-        $port = Yii::$app->params["MQTT"]["PORT"];
-        $user = Yii::$app->params["MQTT"]["USER"];
-        $password = Yii::$app->params["MQTT"]["PASSWORD"];
+        $host =Yii::$app->params["MQTT"]["PUBLIC-HOST"];
+        $port = Yii::$app->params["MQTT"]["PUBLIC-PORT"];
+        $user = Yii::$app->params["MQTT"]["PUBLIC-USER"];
+        $password = Yii::$app->params["MQTT"]["PUBLIC-PASSWORD"];
 
         $result = [
                 "url" => "amqp://$user:$password@$host:$port"
