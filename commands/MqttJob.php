@@ -19,7 +19,7 @@ class MqttJob extends yii\base\BaseObject implements \yii\queue\JobInterface
 
     public function execute($queue)
     {
-        Utils::AddLog("MqttJob->execute: START " . $this->helpRequestId,'info',false,'log-job');
+        Utils::AddLog("MqttJob->execute: START " . $this->mqttQueue,'info',false,'log-job');
 
         try
         {
