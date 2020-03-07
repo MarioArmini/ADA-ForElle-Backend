@@ -13,6 +13,8 @@ use yii\mongodb\file\Upload;
 use yii\mongodb\Collection;
 use yii\mongodb\file\Query;
 use app\models\Utils;
+use PhpAmqpLib\Connection\AMQPStreamConnection;
+use PhpAmqpLib\Message\AMQPMessage;
 
 class TestController extends Controller
 {
@@ -89,6 +91,30 @@ class TestController extends Controller
         //$collection = Yii::$app->dbfiles->getCollection('files');
         //$collection->insert(['helpRequestDetailId' => 1, 'audioFile' => base64_encode($content)]);
     }
+    public function actionTestMqtt()
+    {
+        $j = new \yii\helpers\Json();
+        $connection = new AMQPStreamConnection(Yii::$app->params["MQTT"]["HOST"],
+                                                Yii::$app->params["MQTT"]["PORT"],
+                                                Yii::$app->params["MQTT"]["USER"],
+                                                Yii::$app->params["MQTT"]["PASSWORD"]);
+        $channel = $connection->channel();
 
+        $dati = [
+                "id" => 1,
+                "lon" => 2,
+                "lat" => 3
+            ];
+
+        $channel->queue_declare('hello', false, false, false, false);
+
+        $msg = new AMQPMessage($j->encode($dati));
+        $channel->basic_publish($msg,'', 'hello');
+
+        echo " [x] Sent'\n";
+
+        $channel->close();
+        $connection->close();
+    }
 
 }

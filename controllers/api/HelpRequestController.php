@@ -118,6 +118,8 @@ class HelpRequestController extends \yii\rest\Controller
             $obj->active = 1;
             if($obj->save(false))
             {
+                $obj->publishQueue = "Q" - $obj->userId . "-" . $obj->id . "-" . Yii::$app->security->generateRandomString(32);
+                $obj->save(false);
                 $devices = [];
                 $helpRequestNotifications = [];
                 $pRs = \app\models\UserFriends::find()->where(["userId" => $obj->userId])->all();
@@ -216,8 +218,9 @@ class HelpRequestController extends \yii\rest\Controller
                     if(strlen($audioFile) > 0)
                     {
                         $obj->saveAudio($audioFile,$type);
-                        $helpRequest->sendNotificaFriends(HelpRequest::CATEGORY_UPDATE_REQUEST);
+                        //$helpRequest->sendNotificaFriends(HelpRequest::CATEGORY_UPDATE_REQUEST);
                     }
+                    $helpRequest->sendDetailNotificaMqtt($obj->getJson());
                     return $obj;
                 }
             }

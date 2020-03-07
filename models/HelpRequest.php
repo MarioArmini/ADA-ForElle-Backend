@@ -45,6 +45,7 @@ class HelpRequest extends \yii\db\ActiveRecord
             [['lat', 'lon'], 'number'],
             [['dateInsert', 'dateModify'], 'safe'],
             [['description'], 'string', 'max' => 255],
+            [['publishQueue'], 'string', 'max' => 1024],
             [['userId'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['userId' => 'id']],
         ];
     }
@@ -64,6 +65,7 @@ class HelpRequest extends \yii\db\ActiveRecord
             'dateInsert' => Yii::t('app', 'Date Insert'),
             'dateModify' => Yii::t('app', 'Date Modify'),
             'active' => Yii::t('app', 'Active'),
+            'publishQueue' => Yii::t('app', 'PublishQueue'),
         ];
     }
     function beforeDelete() {
@@ -199,5 +201,21 @@ class HelpRequest extends \yii\db\ActiveRecord
             'dateModify' => Utils::ToUTC($this->dateModify),
             'active' => intval($this->active),
             ];
+    }
+    function sendDetailNotificaMqtt($dati)
+    {
+        try
+        {
+            Yii::$app->queue->push(new \app\commands\MqttJob([
+                                'dati' => $dati,
+                                'mqttQueue' => $this->publishQueue,
+                                ]));
+            return true;
+        }
+        catch(\Exception $ex)
+        {
+            Utils::AddLog($ex);
+        }
+        return false;
     }
 }

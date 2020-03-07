@@ -9,7 +9,10 @@ namespace app\commands;
 
 use yii\console\Controller;
 use yii\console\ExitCode;
+use PhpAmqpLib\Connection\AMQPStreamConnection;
+use PhpAmqpLib\Message\AMQPMessage;
 
+use Yii;
 /**
  * This command echoes the first argument that you have entered.
  *
@@ -30,5 +33,31 @@ class HelloController extends Controller
         echo $message . "\n";
 
         return ExitCode::OK;
+    }
+    public function actionSubscribeQueue($queue)
+    {
+        $j = new \yii\helpers\Json();
+        $connection = new AMQPStreamConnection(Yii::$app->params["MQTT"]["HOST"], 
+                                                Yii::$app->params["MQTT"]["PORT"], 
+                                                Yii::$app->params["MQTT"]["USER"], 
+                                                Yii::$app->params["MQTT"]["PASSWORD"]);
+        $channel = $connection->channel();
+
+        $channel->queue_declare($queue, false, false, false, false);
+
+        echo " [*] Waiting for messages. To exit press CTRL+C\n";
+
+        $callback = function ($msg) {
+            echo ' [x] Received ', $msg->body, "\n";
+        };
+
+        $channel->basic_consume($queue, '', false, true, false, false, $callback);
+
+        while ($channel->is_consuming()) {
+            $channel->wait();
+        }
+
+        $channel->close();
+        $connection->close();
     }
 }
