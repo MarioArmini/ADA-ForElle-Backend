@@ -37,13 +37,26 @@ class HelloController extends Controller
     public function actionSubscribeQueue($queue)
     {
         $j = new \yii\helpers\Json();
-        $connection = new AMQPStreamConnection(Yii::$app->params["MQTT"]["HOST"], 
-                                                Yii::$app->params["MQTT"]["PORT"], 
-                                                Yii::$app->params["MQTT"]["USER"], 
+        $connection = new AMQPStreamConnection(Yii::$app->params["MQTT"]["HOST"],
+                                                Yii::$app->params["MQTT"]["PORT"],
+                                                Yii::$app->params["MQTT"]["USER"],
                                                 Yii::$app->params["MQTT"]["PASSWORD"]);
         $channel = $connection->channel();
+        $channel->exchange_declare($queue, 'fanout', false, false, false);
 
-        $channel->queue_declare($queue, false, false, false, false);
+        list($queue_name, ,) = $channel->queue_declare("", false, false, true, false);
+
+        $channel->queue_bind($queue_name, $queue);
+
+        echo " [*] Waiting for logs. To exit press CTRL+C\n";
+
+        $callback = function ($msg) {
+            echo ' [x] ', $msg->body, "\n";
+        };
+
+        $channel->basic_consume($queue_name, '', false, true, false, false, $callback);
+
+       /* $channel->queue_declare($queue, false, false, false, false);
 
         echo " [*] Waiting for messages. To exit press CTRL+C\n";
 
@@ -52,7 +65,7 @@ class HelloController extends Controller
         };
 
         $channel->basic_consume($queue, '', false, true, false, false, $callback);
-
+        */
         while ($channel->is_consuming()) {
             $channel->wait();
         }

@@ -356,4 +356,17 @@ class HelpRequestController extends \yii\rest\Controller
         }
         throw new \yii\web\BadRequestHttpException("Data Wrong");
     }
+    public function actionParameterMqtt()
+    {
+        $host =Yii::$app->params["MQTT"]["HOST"];
+        $port = Yii::$app->params["MQTT"]["PORT"];
+        $user = Yii::$app->params["MQTT"]["USER"];
+        $password = Yii::$app->params["MQTT"]["PASSWORD"];
+
+        $result = [
+                "url" => "amqp://$user:$password@$host:$port"
+            ];
+
+        return $result;
+    }
 }

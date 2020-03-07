@@ -103,13 +103,21 @@ class TestController extends Controller
         $dati = [
                 "id" => 1,
                 "lon" => 2,
-                "lat" => 3
+                "lat" => 3,
+                "time" => date("c")
             ];
 
-        $channel->queue_declare('hello', false, false, false, false);
+        /*$channel->queue_declare('hello', false, false, false, false);
 
         $msg = new AMQPMessage($j->encode($dati));
         $channel->basic_publish($msg,'', 'hello');
+        */
+        $channel->exchange_declare('hello', 'fanout', false, false, false);
+
+
+        $msg = new AMQPMessage($j->encode($dati));
+
+        $channel->basic_publish($msg, 'hello');
 
         echo " [x] Sent'\n";
 
