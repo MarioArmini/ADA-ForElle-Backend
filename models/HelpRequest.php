@@ -27,6 +27,8 @@ class HelpRequest extends \yii\db\ActiveRecord
     const CATEGORY_END_REQUEST = "End Request";
     const CATEGORY_UPDATE_REQUEST = "Update Request";
 
+    const TYPE_NOTIFY_DETAIL = "detail";
+
     /**
      * {@inheritdoc}
      */
@@ -208,6 +210,7 @@ class HelpRequest extends \yii\db\ActiveRecord
         try
         {
             Yii::$app->queue->push(new \app\commands\MqttJob([
+                                'type' => self::TYPE_NOTIFY_DETAIL,
                                 'dati' => $dati,
                                 'mqttQueue' => $this->publishQueue,
                                 ]));

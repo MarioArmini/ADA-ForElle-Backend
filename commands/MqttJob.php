@@ -14,12 +14,13 @@ use PhpAmqpLib\Message\AMQPMessage;
 
 class MqttJob extends yii\base\BaseObject implements \yii\queue\JobInterface
 {
-    public $dati = "";
+    public $type = "";
+    public $dati = [];
     public $mqttQueue = "";
 
     public function execute($queue)
     {
-        Utils::AddLog("MqttJob->execute: START " . $this->mqttQueue,'info',false,'log-job');
+        Utils::AddLog("MqttJob->execute: START " . $this->type . " -> " . $this->mqttQueue,'info',false,'log-job');
 
         try
         {
@@ -30,10 +31,17 @@ class MqttJob extends yii\base\BaseObject implements \yii\queue\JobInterface
                                                     Yii::$app->params["MQTT"]["PASSWORD"]);
             $channel = $connection->channel();
 
-            $channel->queue_declare($this->mqttQueue, false, false, false, false);
+            $channel->exchange_declare($this->mqttQueue, 'fanout', false, false, false);
 
-            $msg = new AMQPMessage($j->encode($this->dati));
-            $channel->basic_publish($msg,'', $this->mqttQueue);
+            $pkg = [
+                "type" => $this->type,
+                "timeStamp" => Utils::ToUTCz(time()),
+                "data" => $j->encode($this->dati)
+                ];
+
+            $msg = new AMQPMessage($j->encode($pkg));
+
+            $channel->basic_publish($msg, $this->mqttQueue);
 
             $channel->close();
             $connection->close();
