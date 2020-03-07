@@ -200,6 +200,7 @@ class HelpRequest extends \yii\db\ActiveRecord
             'dateInsert' =>  Utils::ToUTC($this->dateInsert),
             'dateModify' => Utils::ToUTC($this->dateModify),
             'active' => intval($this->active),
+            'publishQueue' => trim($this->publishQueue)
             ];
     }
     function sendDetailNotificaMqtt($dati)
