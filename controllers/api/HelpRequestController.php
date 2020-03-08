@@ -80,12 +80,18 @@ class HelpRequestController extends \yii\rest\Controller
             $pRs = $obj->getHelpRequestNotifications()->where(["friendId" => $userId])->all();
             if(count($pRs) > 0 || $obj->userId == $userId)
             {
+                $sendNotify = false;
                 foreach($pRs as $r)
                 {
                     if(strlen($r->dateLastSeen) == 0) {
                         $r->dateLastSeen = date("Y-m-d H:i:s");
                         $r->save(false);
+                        $sendNotify = true;
                     }
+                }
+                if($sendNotify)
+                {
+                    $obj->sendLastSeenNotificaMqtt($obj->getLastSeenFriends());
                 }
                 return $obj->getJson();
             }
@@ -177,7 +183,7 @@ class HelpRequestController extends \yii\rest\Controller
                 {
                     if($active == 0)
                     {
-                        $obj->sendNotificaFriends(HelpRequest::CATEGORY_END_REQUEST);
+                        $obj->sendNotificaFriends(HelpRequest::CATEGORY_END_REQUEST,true);
                     }
                     return $obj->getJson();
                 }
@@ -368,5 +374,15 @@ class HelpRequestController extends \yii\rest\Controller
             ];
 
         return $result;
+    }
+    public function actionLastSeenFriends($id)
+    {
+        $obj = HelpRequest::findOne($id);
+        $userId = Utils::GetUserID();
+        if($obj != null && ($obj->userId == $userId || $obj->isFriend($userId)))
+        {
+            return $obj->getLastSeenFriends();
+        }
+        throw new \yii\web\BadRequestHttpException("Data Wrong");
     }
 }

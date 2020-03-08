@@ -28,6 +28,7 @@ class HelpRequest extends \yii\db\ActiveRecord
     const CATEGORY_UPDATE_REQUEST = "Update Request";
 
     const TYPE_NOTIFY_DETAIL = "detail";
+    const TYPE_NOTIFY_LASTSEEN = "last-seen";
 
     /**
      * {@inheritdoc}
@@ -154,6 +155,11 @@ class HelpRequest extends \yii\db\ActiveRecord
         if($user != null) return $user->getJson();
         return null;
     }
+    function isFriend($userId) {
+        $count = $this->getHelpRequestNotifications()->where(["friendId" => $userId])->count();
+        if($count > 0) return true;
+        return false;
+    }
     function sendNotificaFriends($category,$lastSeenValid = false) {
         try
         {
@@ -211,6 +217,53 @@ class HelpRequest extends \yii\db\ActiveRecord
         {
             Yii::$app->queue->push(new \app\commands\MqttJob([
                                 'type' => self::TYPE_NOTIFY_DETAIL,
+                                'dati' => $dati,
+                                'mqttQueue' => $this->publishQueue,
+                                ]));
+            return true;
+        }
+        catch(\Exception $ex)
+        {
+            Utils::AddLog($ex);
+        }
+        return false;
+    }
+    function getLastSeenFriends()
+    {
+        try
+        {
+            $result = [];
+            $sql = "SELECT n.friendId,u.name, n.dateLastSeen
+                    FROM HelpRequestNotifications n
+                    LEFT JOIN Users u ON u.id = n.friendId
+                    WHERE n.helpRequestId = " . intval($this->id) . " AND n.dateLastSeen IS NOT NULL";
+            Utils::AddLog($sql);
+            $pRs = Yii::$app->db->createCommand($sql)->queryAll();
+            foreach($pRs as $r)
+            {
+                if(intval($r["friendId"]) == $this->userId) continue;
+
+                $result[] = [
+                    "friendId" => intval($r["friendId"]),
+                    "name" => trim($r["name"]),
+                    "dateLastSeen" => Utils::ToUTC($r["dateLastSeen"]),
+                    ];
+            }
+            Utils::AddLog($result);
+            return $result;
+        }
+        catch(\Exception $ex)
+        {
+            Utils::AddLog($ex);
+        }
+        return [];
+    }
+    function sendLastSeenNotificaMqtt($dati)
+    {
+        try
+        {
+            Yii::$app->queue->push(new \app\commands\MqttJob([
+                                'type' => self::TYPE_NOTIFY_LASTSEEN,
                                 'dati' => $dati,
                                 'mqttQueue' => $this->publishQueue,
                                 ]));
