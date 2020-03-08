@@ -285,24 +285,58 @@ class UserController extends \yii\rest\Controller
         $user = \app\models\Users::findOne(Utils::GetUserID());
         if($user != null)
         {
-            $friends = [];
-            $checkId = [];
-            $pRs = \app\models\UserFriends::find()->where(["friendId" => $user->id])->all();
-            foreach($pRs as $r)
-            {
-                $friend = \app\models\Users::findOne($r->userId);
-                if($friend != null)
-                {
-                    if(!isset($checkId[$r->userId]))
-                    {
-                        $checkId[$r->userId] = $r->userId;
-                        $friends[] = $friend->getJson();
-                    }
-                }
-            }
-            return $friends;
+            return $this->getListMyFriends($user->id);
         }
 
         throw new \yii\web\BadRequestHttpException("Data Wrong");
+    }
+    public function actionDeleteMyFriend()
+    {
+        if(Yii::$app->request->isDelete)
+        {
+            $body = trim(Yii::$app->request->rawBody);
+            $j = new \yii\helpers\Json();
+
+            $dati = $j->decode($body);
+
+            $friendId = intval(Utils::GetVal($dati,"friendId"));
+
+            $user = \app\models\Users::findOne(Utils::GetUserID());
+            $friend = \app\models\Users::findOne($friendId);
+            if($user != null && $friend != null)
+            {
+                $obj = \app\models\UserFriends::findOne(["userId" => $friendId, "friendId" => $user->id]);
+                if($obj != null)
+                {
+                    $obj->delete();
+                    return [
+                            "success" => true,
+                            "id" => $obj->id,
+                            "friend" => $this->getListMyFriends($user->id)
+                            ];
+                }
+            }
+        }
+
+        throw new \yii\web\BadRequestHttpException("Data Wrong");
+    }
+    function getListMyFriends($userId)
+    {
+        $friends = [];
+        $checkId = [];
+        $pRs = \app\models\UserFriends::find()->where(["friendId" => $userId])->all();
+        foreach($pRs as $r)
+        {
+            $friend = \app\models\Users::findOne($r->userId);
+            if($friend != null)
+            {
+                if(!isset($checkId[$r->userId]))
+                {
+                    $checkId[$r->userId] = $r->userId;
+                    $friends[] = $friend->getJson();
+                }
+            }
+        }
+        return $friends;
     }
 }
