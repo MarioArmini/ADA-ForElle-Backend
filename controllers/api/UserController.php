@@ -280,4 +280,29 @@ class UserController extends \yii\rest\Controller
 
         throw new \yii\web\BadRequestHttpException("Data Wrong");
     }
+    public function actionFindMyFriends()
+    {
+        $user = \app\models\Users::findOne(Utils::GetUserID());
+        if($user != null)
+        {
+            $friends = [];
+            $checkId = [];
+            $pRs = \app\models\UserFriends::find()->where(["friendId" => $user->id])->all();
+            foreach($pRs as $r)
+            {
+                $friend = \app\models\Users::findOne($r->userId);
+                if($friend != null)
+                {
+                    if(!isset($checkId[$r->userId]))
+                    {
+                        $checkId[$r->userId] = $r->userId;
+                        $friends[] = $friend->getJson();
+                    }
+                }
+            }
+            return $friends;
+        }
+
+        throw new \yii\web\BadRequestHttpException("Data Wrong");
+    }
 }
