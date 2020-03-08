@@ -64,7 +64,13 @@ class HelpRequestDetails extends \yii\db\ActiveRecord
 
         if(strlen($this->audioFileUrl) > 0)
         {
-            Utils::delFile($this->getFullPathFile());
+            $query = new Query();
+            $obj = $query->from('fs')->where(["helpRequestDetailId" => intval($this->id)])->one();
+            if($obj != null)
+            {
+                Yii::$app->mongodb->getFileCollection()->delete($obj["_id"]);
+            }
+            //Utils::delFile($this->getFullPathFile());
         }
 
         return true;
@@ -101,7 +107,7 @@ class HelpRequestDetails extends \yii\db\ActiveRecord
                 */
                 $document = Yii::$app->mongodb->getFileCollection()->createUpload([
                         "filename" => $filename,
-                        "document" => ["helpRequestDetailId" => $this->id, "helpRequestId" => $this->helpRequestId],
+                        "document" => ["helpRequestDetailId" => intval($this->id), "helpRequestId" => intval($this->helpRequestId)],
                         ])
                     ->addContent($buf)
                     ->complete();
@@ -143,7 +149,7 @@ class HelpRequestDetails extends \yii\db\ActiveRecord
             $obj = $query->from('fs')->where(["helpRequestDetailId" => $this->id])->one();
             if($obj != null)
             {
-                $document = Yii::$app->mongodb->getFileCollection()->createDownload($obj["_id"])->toFile($pathFile);
+                Yii::$app->mongodb->getFileCollection()->createDownload($obj["_id"])->toFile($pathFile);
                 return $pathFile;
             }
         }

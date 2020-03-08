@@ -51,7 +51,7 @@ class TestController extends Controller
         $content = file_get_contents($pathFile);
         $document = Yii::$app->mongodb->getFileCollection()->createUpload([
                         "filename" => basename($pathFile),
-                        "document" => ["helpRequestDetailId" => $id],
+                        "document" => ["helpRequestDetailId" => intval($id)],
                         ])
                 ->addContent($content)
                 ->complete();
@@ -69,7 +69,7 @@ class TestController extends Controller
 
 
         $query = new Query();
-        $obj = $query->from('fs')->where(["helpRequestDetailId" => $id])->one();
+        $obj = $query->from('fs')->where(["helpRequestDetailId" => intval($id)])->one();
         if($obj != null)
         {
             $document = Yii::$app->mongodb->getFileCollection()->createDownload($obj["_id"])->toFile($pathFile);
@@ -79,6 +79,36 @@ class TestController extends Controller
         /*foreach ($rows as $row) {
             var_dump($row); // outputs: "object(\yii\mongodb\file\Download)"
             //echo $row['file']->toString(); // outputs file content
+        }*/
+        exit;
+        //
+
+        //$document = Yii::$app->mongodb->getFileCollection()->createDownload($idObject)->toFile($pathFile);
+
+        //var_dump($obj);
+        //$mng = new \MongoDB\Driver\Manager("mongodb://localhost:27017");
+        //var_dump($mng);
+        //$collection = Yii::$app->dbfiles->getCollection('files');
+        //$collection->insert(['helpRequestDetailId' => 1, 'audioFile' => base64_encode($content)]);
+    }
+    public function actionTestMongoDelete($id = 1)
+    {
+        echo("<pre>");
+        $query = new Query();
+        $obj = $query->from('fs')->where(["helpRequestDetailId" => intval($id)])->one();
+        if($obj != null)
+        {
+            var_dump($obj);
+            $result = Yii::$app->mongodb->getFileCollection()->delete($obj["_id"]);
+            var_dump($result);
+        }
+        else
+        {
+            echo("Nessun record trovato");
+        }
+        /*foreach ($rows as $row) {
+        var_dump($row); // outputs: "object(\yii\mongodb\file\Download)"
+        //echo $row['file']->toString(); // outputs file content
         }*/
         exit;
         //
