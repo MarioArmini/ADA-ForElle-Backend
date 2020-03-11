@@ -39,8 +39,8 @@ class HelloController extends Controller
         $j = new \yii\helpers\Json();
         $connection = new AMQPStreamConnection(Yii::$app->params["MQTT"]["HOST"],
                                                 Yii::$app->params["MQTT"]["PORT"],
-                                                Yii::$app->params["MQTT"]["USER"],
-                                                Yii::$app->params["MQTT"]["PASSWORD"]);
+                                                Yii::$app->params["MQTT"]["PUBLIC-USER"],
+                                                Yii::$app->params["MQTT"]["PUBLIC-PASSWORD"]);
         $channel = $connection->channel();
         $channel->exchange_declare($queue, 'fanout', false, false, false);
 
